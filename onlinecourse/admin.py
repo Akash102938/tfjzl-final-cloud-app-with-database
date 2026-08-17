@@ -1,23 +1,22 @@
 from django.contrib import admin
 from .models import Course, Lesson, Instructor, Learner, Question, Choice, Submission
 
-# Inline Model Configurations
+
+class ChoiceInline(admin.TabularInline):
+    model = Choice
+    extra = 4
+
+
+class QuestionInline(admin.TabularInline):
+    model = Question
+    extra = 2
+
+
 class LessonInline(admin.StackedInline):
     model = Lesson
     extra = 5
 
 
-class ChoiceInline(admin.StackedInline):
-    model = Choice
-    extra = 2
-
-
-class QuestionInline(admin.StackedInline):
-    model = Question
-    extra = 2
-
-
-# ModelAdmin Configurations
 class CourseAdmin(admin.ModelAdmin):
     inlines = [LessonInline]
     list_display = ('name', 'pub_date')
@@ -25,20 +24,25 @@ class CourseAdmin(admin.ModelAdmin):
     search_fields = ['name', 'description']
 
 
-class QuestionAdmin(admin.ModelAdmin):
-    inlines = [ChoiceInline]
-    list_display = ['content']
-
-
 class LessonAdmin(admin.ModelAdmin):
     list_display = ['title']
 
 
-# Model Registrations
+class QuestionAdmin(admin.ModelAdmin):
+    inlines = [ChoiceInline]
+    list_display = ['content', 'grade', 'course']
+    list_filter = ['course']
+    search_fields = ['content']
+
+
+class ChoiceAdmin(admin.ModelAdmin):
+    list_display = ['content', 'is_correct', 'question']
+
+
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Lesson, LessonAdmin)
 admin.site.register(Instructor)
 admin.site.register(Learner)
 admin.site.register(Question, QuestionAdmin)
-admin.site.register(Choice)
+admin.site.register(Choice, ChoiceAdmin)
 admin.site.register(Submission)
